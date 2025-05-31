@@ -150,11 +150,7 @@
 <body>
     <div class="sidebar">
         <div class="menu-item" onclick="showPage('schedule')">일정계획</div>
-        <div class="menu-item has-submenu" onclick="toggleSubmenu('dev-env')">개발환경 세팅</div>
-        <div class="submenu" id="dev-env-submenu">
-            <div class="submenu-item" onclick="showPage('cursor-ai')">Cursor AI</div>
-            <div class="submenu-item" onclick="showPage('git')">Git</div>
-        </div>
+        <div class="menu-item" onclick="showPage('env-setup')">환경 세팅</div>
         <div class="menu-item" onclick="showPage('materials')">자료</div>
         <div class="menu-item" onclick="showPage('links')">링크 모음</div>
     </div>
@@ -227,6 +223,16 @@
                     <li><input type="checkbox" data-task="5"> 6/4 20:30, 온라인 멘토링</li>
                 </ul>
             `,
+            'env-setup': `
+                <h2>환경 세팅</h2>
+                <ul>
+                    <li>Python 설치: <a href="https://www.python.org/" target="_blank">https://www.python.org/</a></li>
+                    <li>VS Code 설치: <a href="https://code.visualstudio.com/" target="_blank">https://code.visualstudio.com/</a></li>
+                    <li>커서AI 설치: <a href="https://www.cursor.com/" target="_blank">https://www.cursor.com/</a></li>
+                    <li>Node.JS 설치: <a href="https://nodejs.org/ko" target="_blank">https://nodejs.org/ko</a></li>
+                    <li>Git 설치: <a href="https://git-scm.com/" target="_blank">https://git-scm.com/</a></li>
+                </ul>
+            `,
             'materials': `
                 <h2>자료 업로드 및 다운로드</h2>
                 <div class="file-upload">
@@ -238,28 +244,6 @@
             'links': `
                 <h2>링크 모음</h2>
                 <p><a href="https://linktr.ee/WXzerothon" target="_blank">WXzerothon 링크트리</a></p>
-            `,
-            'cursor-ai': `
-                <h2>Cursor AI</h2>
-                <div>
-                    <h3>Cursor AI 설치 및 설정</h3>
-                    <ol>
-                        <li>공식 웹사이트(https://cursor.sh)에서 운영체제에 맞는 버전 다운로드</li>
-                        <li>설치 파일 실행 및 기본 설정</li>
-                        <li>GitHub 계정 연동, API 키 설정(필요시)</li>
-                    </ol>
-                </div>
-            `,
-            'git': `
-                <h2>Git</h2>
-                <div>
-                    <h3>Git 설치 및 기본 설정</h3>
-                    <ol>
-                        <li>Git for Windows 다운로드 및 설치</li>
-                        <li>사용자 이름/이메일 설정</li>
-                        <li>기본 명령어: git init, clone, add, commit, push, pull</li>
-                    </ol>
-                </div>
             `
         };
 
