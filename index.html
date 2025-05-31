@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WX Basic - SPA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        .menu-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #ddd;
+        }
+        .menu-item:hover {
+            background-color: #e0e0e0;
+        }
+        .menu-item.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .submenu {
+            display: none;
+            padding-left: 20px;
+            background-color: #f8f9fa;
+        }
+        .submenu.active {
+            display: block;
+        }
+        .submenu-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        .submenu-item:hover {
+            background-color: #e0e0e0;
+        }
+        .submenu-item.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .menu-item.has-submenu::after {
+            content: '▼';
+            float: right;
+            font-size: 12px;
+        }
+        .menu-item.has-submenu.active::after {
+            content: '▲';
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .task-list {
+            list-style: none;
+            margin: 10px 0;
+        }
+        .task-list li {
+            margin: 5px 0;
+        }
+        .task-list input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f0f0f0;
+        }
+        .course-name {
+            text-align: left;
+        }
+        .file-upload {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .file-list {
+            margin-top: 20px;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .file-item:hover {
+            background-color: #f5f5f5;
+        }
+        .file-name {
+            flex: 1;
+        }
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .file-actions button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .download-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="menu-item" onclick="showPage('schedule')">일정계획</div>
+        <div class="menu-item has-submenu" onclick="toggleSubmenu('dev-env')">개발환경 세팅</div>
+        <div class="submenu" id="dev-env-submenu">
+            <div class="submenu-item" onclick="showPage('cursor-ai')">Cursor AI</div>
+            <div class="submenu-item" onclick="showPage('git')">Git</div>
+        </div>
+        <div class="menu-item" onclick="showPage('materials')">자료</div>
+        <div class="menu-item" onclick="showPage('links')">링크 모음</div>
+    </div>
+    <div class="content" id="content"></div>
+
+    <script>
+        // 각 페이지의 HTML
+        const pageContents = {
+            'schedule': `
+                <h2>일정계획</h2>
+                <h3>5/27~6/3, 스파르타 코딩클럽 및 관련 강의 수강 완료</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>강의명</th>
+                            <th>강한</th>
+                            <th>서형준</th>
+                            <th>최성일</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="course-name">문과생을 위한 IT 용어 해설</td>
+                            <td><input type="checkbox" data-row="0" data-col="0"></td>
+                            <td><input type="checkbox" data-row="0" data-col="1"></td>
+                            <td><input type="checkbox" data-row="0" data-col="2"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name">커서AI(인프런)</td>
+                            <td><input type="checkbox" data-row="1" data-col="0"></td>
+                            <td><input type="checkbox" data-row="1" data-col="1"></td>
+                            <td><input type="checkbox" data-row="1" data-col="2"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name">나만의 ChatGPT 서비스 만들기</td>
+                            <td><input type="checkbox" data-row="2" data-col="0"></td>
+                            <td><input type="checkbox" data-row="2" data-col="1"></td>
+                            <td><input type="checkbox" data-row="2" data-col="2"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name">깃&깃허브 완전 정복</td>
+                            <td><input type="checkbox" data-row="3" data-col="0"></td>
+                            <td><input type="checkbox" data-row="3" data-col="1"></td>
+                            <td><input type="checkbox" data-row="3" data-col="2"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name">칼퇴를 부르는 엑셀</td>
+                            <td><input type="checkbox" data-row="4" data-col="0"></td>
+                            <td><input type="checkbox" data-row="4" data-col="1"></td>
+                            <td><input type="checkbox" data-row="4" data-col="2"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name">노코드로 빠르게 웹 서비스 만들기</td>
+                            <td><input type="checkbox" data-row="5" data-col="0"></td>
+                            <td><input type="checkbox" data-row="5" data-col="1"></td>
+                            <td><input type="checkbox" data-row="5" data-col="2"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>5/29~6/1, 가격예측모델 구현</h3>
+                <ul class="task-list">
+                    <li><input type="checkbox" data-task="0"> 5/28, 물가정보 데이터 발송(20-24) // 서형준</li>
+                    <li><input type="checkbox" data-task="1"> 5/31, 품목코드 데이터 생성 // 강한</li>
+                    <li><input type="checkbox" data-task="2"> 6/1, 가격예측모델 구현 // 강한</li>
+                    <li><input type="checkbox" data-task="3"> 6/3, ChatGPT API 사용하는 것 시도해보기</li>
+                </ul>
+                <h3>6/4~5, 프로토타입 구현 및 회의</h3>
+                <ul class="task-list">
+                    <li><input type="checkbox" data-task="4"> 6/4, (회사) 오프라인 미팅</li>
+                    <li><input type="checkbox" data-task="5"> 6/4 20:30, 온라인 멘토링</li>
+                </ul>
+            `,
+            'materials': `
+                <h2>자료 업로드 및 다운로드</h2>
+                <div class="file-upload">
+                    <input type="file" id="fileInput" multiple>
+                    <button id="uploadBtn">업로드</button>
+                </div>
+                <div class="file-list" id="fileList"></div>
+            `,
+            'links': `
+                <h2>링크 모음</h2>
+                <p><a href="https://linktr.ee/WXzerothon" target="_blank">WXzerothon 링크트리</a></p>
+            `,
+            'cursor-ai': `
+                <h2>Cursor AI</h2>
+                <div>
+                    <h3>Cursor AI 설치 및 설정</h3>
+                    <ol>
+                        <li>공식 웹사이트(https://cursor.sh)에서 운영체제에 맞는 버전 다운로드</li>
+                        <li>설치 파일 실행 및 기본 설정</li>
+                        <li>GitHub 계정 연동, API 키 설정(필요시)</li>
+                    </ol>
+                </div>
+            `,
+            'git': `
+                <h2>Git</h2>
+                <div>
+                    <h3>Git 설치 및 기본 설정</h3>
+                    <ol>
+                        <li>Git for Windows 다운로드 및 설치</li>
+                        <li>사용자 이름/이메일 설정</li>
+                        <li>기본 명령어: git init, clone, add, commit, push, pull</li>
+                    </ol>
+                </div>
+            `
+        };
+
+        // 페이지 로드 함수
+        function loadPage(pageId) {
+            document.getElementById('content').innerHTML = pageContents[pageId] || '<p>페이지가 없습니다.</p>';
+            if (pageId === 'schedule') restoreScheduleCheckboxes();
+            if (pageId === 'materials') setupMaterialsPage();
+        }
+
+        // 메뉴/서브메뉴
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId + '-submenu');
+            const menuItem = event.target;
+            document.querySelectorAll('.submenu').forEach(sub => {
+                if (sub !== submenu) {
+                    sub.classList.remove('active');
+                    sub.previousElementSibling.classList.remove('active');
+                }
+            });
+            submenu.classList.toggle('active');
+            menuItem.classList.toggle('active');
+        }
+
+        function showPage(pageId) {
+            loadPage(pageId);
+            document.querySelectorAll('.menu-item, .submenu-item').forEach(item => item.classList.remove('active'));
+            const menuItem = document.querySelector(`[onclick="showPage('${pageId}')"]`);
+            if (menuItem) {
+                menuItem.classList.add('active');
+                if (menuItem.classList.contains('submenu-item')) {
+                    menuItem.parentElement.previousElementSibling.classList.add('active');
+                    menuItem.parentElement.classList.add('active');
+                }
+            }
+        }
+
+        // 일정계획 체크박스 상태 저장/복원
+        function restoreScheduleCheckboxes() {
+            // 표 체크박스
+            document.querySelectorAll('table input[type="checkbox"]').forEach(cb => {
+                const key = 'schedule_cb_' + cb.dataset.row + '_' + cb.dataset.col;
+                const saved = localStorage.getItem(key);
+                if (saved !== null) cb.checked = saved === 'true';
+                cb.addEventListener('change', function() {
+                    localStorage.setItem(key, cb.checked);
+                });
+            });
+            // 할일 체크박스
+            document.querySelectorAll('.task-list input[type="checkbox"]').forEach(cb => {
+                const key = 'schedule_task_' + cb.dataset.task;
+                const saved = localStorage.getItem(key);
+                if (saved !== null) cb.checked = saved === 'true';
+                cb.addEventListener('change', function() {
+                    localStorage.setItem(key, cb.checked);
+                });
+            });
+        }
+
+        // 자료 페이지 파일 업로드/다운로드/삭제
+        function setupMaterialsPage() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const fileListElement = document.getElementById('fileList');
+            uploadBtn.onclick = function() {
+                if (!fileInput.files.length) {
+                    alert('파일을 선택해주세요.');
+                    return;
+                }
+                let fileList = JSON.parse(localStorage.getItem('materialsFileList') || '[]');
+                let files = Array.from(fileInput.files);
+                let filesProcessed = 0;
+                files.forEach((file, idx) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        fileList.push({
+                            name: file.name,
+                            data: e.target.result
+                        });
+                        filesProcessed++;
+                        if (filesProcessed === files.length) {
+                            localStorage.setItem('materialsFileList', JSON.stringify(fileList));
+                            displayFiles();
+                            fileInput.value = '';
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+            };
+            function displayFiles() {
+                const fileList = JSON.parse(localStorage.getItem('materialsFileList') || '[]');
+                fileListElement.innerHTML = '';
+                if (fileList.length === 0) {
+                    fileListElement.innerHTML = '<p>업로드된 파일이 없습니다.</p>';
+                    return;
+                }
+                fileList.forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <span class="file-name">${file.name}</span>
+                        <div class="file-actions">
+                            <button class="download-btn">다운로드</button>
+                            <button class="delete-btn">삭제</button>
+                        </div>
+                    `;
+                    fileItem.querySelector('.download-btn').onclick = function() {
+                        const link = document.createElement('a');
+                        link.href = file.data;
+                        link.download = file.name;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    };
+                    fileItem.querySelector('.delete-btn').onclick = function() {
+                        if (confirm('정말로 이 파일을 삭제하시겠습니까?')) {
+                            let fileList = JSON.parse(localStorage.getItem('materialsFileList') || '[]');
+                            fileList.splice(index, 1);
+                            localStorage.setItem('materialsFileList', JSON.stringify(fileList));
+                            displayFiles();
+                        }
+                    };
+                    fileListElement.appendChild(fileItem);
+                });
+            }
+            displayFiles();
+        }
+
+        // 첫 페이지 로드
+        window.addEventListener('load', function() {
+            showPage('schedule');
+        });
+    </script>
+</body>
+</html> 
